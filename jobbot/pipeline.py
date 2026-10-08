@@ -7,6 +7,8 @@ from . import config, matcher, notify, sources, store
 def run() -> dict:
     resume = store.load_resume_text()
     profile = matcher.extract_profile(resume)
+    if config.TARGET_TITLES:
+        profile["titles"] = config.TARGET_TITLES
     logging.info("Profile titles: %s", profile.get("titles"))
 
     seen = store.load_seen()

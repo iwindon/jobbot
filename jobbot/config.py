@@ -24,3 +24,5 @@ MAX_RESULTS_IN_EMAIL = int(_get("MAX_RESULTS_IN_EMAIL", "20"))
 MAX_JOBS_TO_SCORE = int(_get("MAX_JOBS_TO_SCORE", "60"))
 # Optional free-text preferences passed to the AI (salary, seniority, exclusions...)
 PREFERENCES = _get("JOB_PREFERENCES", "")
+# Semicolon-separated titles to search for; overrides titles inferred from the resume
+TARGET_TITLES = [t.strip() for t in _get("TARGET_TITLES").split(";") if t.strip()]

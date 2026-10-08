@@ -20,7 +20,7 @@ Prereqs: Azure CLI (`az login`) and a free Adzuna key from https://developer.adz
 
 Trigger a run on demand: `POST https://<func>.azurewebsites.net/api/run?code=<function key>`.
 Update the resume by re-uploading `resume.<ext>` to the `jobbot` container. Tune via app settings
-(`MIN_SCORE`, `LOCAL_LOCATIONS`, `LOCAL_RADIUS_MILES`, `JOB_PREFERENCES`, `MAX_RESULTS_IN_EMAIL`).
+(`MIN_SCORE`, `TARGET_TITLES` (semicolon-separated; overrides resume-derived titles), `LOCAL_LOCATIONS`, `LOCAL_RADIUS_MILES`, `JOB_PREFERENCES`, `MAX_RESULTS_IN_EMAIL`).
 
 Notes:
 - Azure OpenAI and ACS email-managed-domain require subscription access/quota in the chosen region; the DataZoneStandard gpt-5.4-mini deployment (override `openAiSku`/`openAiModel` to match your quota; list models with `az cognitiveservices model list -l eastus2`) is used.

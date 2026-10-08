@@ -14,6 +14,7 @@ param emailTo string
 param localLocations string = 'Greenville, SC;Spartanburg, SC'
 param minScore int = 65
 param jobPreferences string = ''
+param targetTitles string = 'Systems Administrator;Linux Administrator;Senior Linux Administrator'
 @secure()
 param adzunaAppId string = ''
 @secure()
@@ -122,6 +123,7 @@ resource func 'Microsoft.Web/sites@2023-12-01' = {
         { name: 'LOCAL_LOCATIONS', value: localLocations }
         { name: 'MIN_SCORE', value: string(minScore) }
         { name: 'JOB_PREFERENCES', value: jobPreferences }
+        { name: 'TARGET_TITLES', value: targetTitles }
         { name: 'ADZUNA_APP_ID', value: adzunaAppId }
         { name: 'ADZUNA_APP_KEY', value: adzunaAppKey }
       ]

@@ -19,15 +19,22 @@ $clientId = az ad app list --display-name $appName --query '[0].appId' -o tsv
 if (-not $clientId) { $clientId = az ad app create --display-name $appName --query appId -o tsv }
 if (-not (az ad sp list --filter "appId eq '$clientId'" --query '[0].id' -o tsv)) { az ad sp create --id $clientId | Out-Null }
 
-$cred = @{
-    name = 'github-main'; issuer = 'https://token.actions.githubusercontent.com'
-    subject = "repo:${GitHubRepo}:ref:refs/heads/$Branch"; audiences = @('api://AzureADTokenExchange')
-} | ConvertTo-Json
-$tmp = New-TemporaryFile; Set-Content $tmp $cred
-if (-not (az ad app federated-credential list --id $clientId --query "[?name=='github-main'].name" -o tsv)) {
-    az ad app federated-credential create --id $clientId --parameters "@$tmp" | Out-Null
+# GitHub may send an ID-based subject (repo:owner@<ownerId>/repo@<repoId>) for this repo; register both forms.
+$ids = @()
+if (Get-Command gh -ErrorAction SilentlyContinue) {
+    $r = gh api "repos/$GitHubRepo" | ConvertFrom-Json
+    $ids += "repo:$($r.owner.login)@$($r.owner.id)/$($r.name)@$($r.id):ref:refs/heads/$Branch"
 }
-Remove-Item $tmp
+$subjects = @{ 'github-main' = "repo:${GitHubRepo}:ref:refs/heads/$Branch" }
+if ($ids) { $subjects['github-main-id'] = $ids[0] }
+foreach ($name in $subjects.Keys) {
+    $cred = @{ name = $name; issuer = 'https://token.actions.githubusercontent.com'; subject = $subjects[$name]; audiences = @('api://AzureADTokenExchange') } | ConvertTo-Json
+    $tmp = New-TemporaryFile; Set-Content $tmp $cred
+    if (-not (az ad app federated-credential list --id $clientId --query "[?name=='$name'].name" -o tsv)) {
+        az ad app federated-credential create --id $clientId --parameters "@$tmp" | Out-Null
+    }
+    Remove-Item $tmp
+}
 
 # Least privilege: contributor on the function app only
 az role assignment create --assignee $clientId --role 'Website Contributor' --scope $funcId | Out-Null
