@@ -1,0 +1,8 @@
+azure-functions
+azure-identity
+azure-storage-blob
+azure-communication-email
+openai>=1.40
+requests
+feedparser
+pypdf

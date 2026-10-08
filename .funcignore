@@ -1,0 +1,7 @@
+.venv
+.git
+infra
+scripts
+local.settings.json
+*.md
+__pycache__

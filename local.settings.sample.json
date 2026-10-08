@@ -1,0 +1,18 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "AZURE_OPENAI_ENDPOINT": "https://<your-openai>.openai.azure.com/",
+    "AZURE_OPENAI_DEPLOYMENT": "gpt-4o-mini",
+    "ACS_CONNECTION_STRING": "",
+    "EMAIL_SENDER": "",
+    "EMAIL_TO": "you@example.com",
+    "ADZUNA_APP_ID": "",
+    "ADZUNA_APP_KEY": "",
+    "LOCAL_LOCATIONS": "Greenville, SC;Spartanburg, SC",
+    "LOCAL_RADIUS_MILES": "30",
+    "MIN_SCORE": "65",
+    "MAX_RESULTS_IN_EMAIL": "20"
+  }
+}
