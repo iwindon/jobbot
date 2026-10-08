@@ -3,7 +3,7 @@
 AI job-search bot on Azure Functions (Python). Every day at 8am ET it:
 
 1. Reads your resume from Blob Storage and has Azure OpenAI extract target titles and skills.
-2. Searches remote boards (Remotive, RemoteOK) and local jobs for Greenville/Spartanburg, SC (Adzuna). WeWorkRemotely is excluded because its listings are paywalled.
+2. Searches remote boards (Remotive, RemoteOK, Himalayas), company career sites (Red Hat via Workday, IBM, Microsoft, plus Greenhouse/Lever boards for Cloudflare, Datadog, MongoDB, Okta, Twilio, Elastic, Canonical, Palantir, Spotify) and local jobs for Greenville/Spartanburg, SC (Adzuna, plus federal jobs from USAJOBS, which needs `USAJOBS_API_KEY` and `USAJOBS_EMAIL`). Company jobs are kept only if they are US-eligible remote or in the SC area, and title-filtered to `TARGET_TITLES`. WeWorkRemotely is excluded because its listings are paywalled.
 3. Skips jobs already seen, pre-ranks by keyword overlap, then has the LLM score the top candidates against your resume.
 4. Emails you matches at or above `MIN_SCORE` via Azure Communication Services.
 

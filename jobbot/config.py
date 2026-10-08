@@ -16,6 +16,8 @@ EMAIL_TO = [e.strip() for e in _get("EMAIL_TO").split(";") if e.strip()]
 
 ADZUNA_APP_ID = _get("ADZUNA_APP_ID")
 ADZUNA_APP_KEY = _get("ADZUNA_APP_KEY")
+USAJOBS_API_KEY = _get("USAJOBS_API_KEY")
+USAJOBS_EMAIL = _get("USAJOBS_EMAIL")
 
 LOCAL_LOCATIONS = [x.strip() for x in _get("LOCAL_LOCATIONS", "Greenville, SC;Spartanburg, SC").split(";") if x.strip()]
 LOCAL_RADIUS_MILES = int(_get("LOCAL_RADIUS_MILES", "30"))
@@ -26,3 +28,8 @@ MAX_JOBS_TO_SCORE = int(_get("MAX_JOBS_TO_SCORE", "60"))
 PREFERENCES = _get("JOB_PREFERENCES", "")
 # Semicolon-separated titles to search for; overrides titles inferred from the resume
 TARGET_TITLES = [t.strip() for t in _get("TARGET_TITLES").split(";") if t.strip()]
+
+# Company career sites. Workday entries are 'company|host|site'; others are board/company slugs.
+WORKDAY_SITES = [x.strip() for x in _get("WORKDAY_SITES", "Red Hat|redhat.wd5.myworkdayjobs.com|Jobs").split(";") if x.strip()]
+GREENHOUSE_BOARDS = [x.strip() for x in _get("GREENHOUSE_BOARDS", "cloudflare,datadog,mongodb,okta,twilio,elastic,canonical").split(",") if x.strip()]
+LEVER_COMPANIES = [x.strip() for x in _get("LEVER_COMPANIES", "palantir,spotify").split(",") if x.strip()]

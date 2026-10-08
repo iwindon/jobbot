@@ -5,6 +5,7 @@ import feedparser
 import requests
 
 from . import config
+from . import companies
 from .models import Job
 
 HEADERS = {"User-Agent": "jobbot/1.0 (personal job search)"}
@@ -114,10 +115,58 @@ def adzuna(queries: list[str]) -> list[Job]:
     return jobs
 
 
+def usajobs(queries: list[str]) -> list[Job]:
+    """Federal jobs near the local area plus remote federal jobs. Requires a free USAJOBS API key."""
+    if not (config.USAJOBS_API_KEY and config.USAJOBS_EMAIL):
+        logging.warning("USAJOBS keys not set; skipping")
+        return []
+    headers = {"Host": "data.usajobs.gov", "User-Agent": config.USAJOBS_EMAIL, "Authorization-Key": config.USAJOBS_API_KEY}
+    searches = [{"LocationName": loc, "Radius": config.LOCAL_RADIUS_MILES} for loc in config.LOCAL_LOCATIONS]
+    searches.append({"RemoteIndicator": "True"})
+    jobs, seen = [], set()
+    for extra in searches:
+        for q in queries[:4]:
+            try:
+                r = requests.get(
+                    "https://data.usajobs.gov/api/search", headers=headers, timeout=TIMEOUT,
+                    params={"Keyword": q, "ResultsPerPage": 50, "DatePosted": 14, "SortField": "opendate", "SortDirection": "desc", **extra},
+                )
+                r.raise_for_status()
+                items = r.json().get("SearchResult", {}).get("SearchResultItems", [])
+            except Exception as e:
+                logging.warning("USAJOBS failed for %r %s: %s", q, extra, e)
+                continue
+            for it in items:
+                d = it.get("MatchedObjectDescriptor", {})
+                jid = it.get("MatchedObjectId") or d.get("PositionID")
+                if not jid or jid in seen:
+                    continue
+                seen.add(jid)
+                details = (d.get("UserArea") or {}).get("Details") or {}
+                pay = (d.get("PositionRemuneration") or [{}])[0]
+                desc = f"{details.get('JobSummary', '')} {d.get('QualificationSummary', '')}".strip()
+                if pay.get("MinimumRange"):
+                    desc += f" Pay: ${pay['MinimumRange']}-${pay.get('MaximumRange', '')} {pay.get('Description', '')}"
+                jobs.append(Job(
+                    id=f"usajobs:{jid}", title=d.get("PositionTitle", ""), company=d.get("OrganizationName", ""),
+                    location=d.get("PositionLocationDisplay", ""), url=d.get("PositionURI", ""),
+                    description=_strip_html(desc)[:3000], source="USAJOBS",
+                    remote="RemoteIndicator" in extra, posted=(d.get("PublicationStartDate") or "")[:10],
+                ))
+    return jobs
+
+
 def fetch_all(queries: list[str]) -> list[Job]:
     seen, out = set(), []
-    for fn in (remotive, remoteok, adzuna):
-        for j in fn(queries):
+    for fn in (remotive, remoteok, adzuna, usajobs, companies.himalayas, companies.workday, companies.ibm,
+               companies.microsoft, companies.greenhouse, companies.lever):
+        try:
+            found = fn(queries)
+        except Exception as e:
+            logging.warning("Source %s crashed: %s", fn.__name__, e)
+            continue
+        logging.info("%s returned %d jobs", fn.__name__, len(found))
+        for j in found:
             if j.id not in seen and j.url:
                 seen.add(j.id)
                 out.append(j)

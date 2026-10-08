@@ -19,6 +19,9 @@ param targetTitles string = 'Systems Administrator;Linux Administrator;Senior Li
 param adzunaAppId string = ''
 @secure()
 param adzunaAppKey string = ''
+@secure()
+param usajobsApiKey string = ''
+param usajobsEmail string = ''
 
 var suffix = uniqueString(resourceGroup().id)
 var storageName = toLower('st${take(replace(baseName, '-', ''), 8)}${suffix}')
@@ -126,6 +129,8 @@ resource func 'Microsoft.Web/sites@2023-12-01' = {
         { name: 'TARGET_TITLES', value: targetTitles }
         { name: 'ADZUNA_APP_ID', value: adzunaAppId }
         { name: 'ADZUNA_APP_KEY', value: adzunaAppKey }
+        { name: 'USAJOBS_API_KEY', value: usajobsApiKey }
+        { name: 'USAJOBS_EMAIL', value: usajobsEmail }
       ]
     }
   }

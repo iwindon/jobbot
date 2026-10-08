@@ -10,6 +10,8 @@
     "EMAIL_TO": "you@example.com",
     "ADZUNA_APP_ID": "",
     "ADZUNA_APP_KEY": "",
+    "USAJOBS_API_KEY": "",
+    "USAJOBS_EMAIL": "",
     "LOCAL_LOCATIONS": "Greenville, SC;Spartanburg, SC",
     "LOCAL_RADIUS_MILES": "30",
     "MIN_SCORE": "65",
