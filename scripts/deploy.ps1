@@ -29,8 +29,12 @@ $key = az storage account keys list -g $ResourceGroup -n $storage --query '[0].v
 az storage container create -n jobbot --account-name $storage --account-key $key | Out-Null
 az storage blob upload -c jobbot -n "resume$ext" -f $ResumePath --account-name $storage --account-key $key --overwrite | Out-Null
 
-Push-Location $root
-try { func azure functionapp publish $func --python --build remote } finally { Pop-Location }
+$zip = Join-Path ([IO.Path]::GetTempPath()) 'jobbot.zip'
+if (Test-Path $zip) { Remove-Item $zip }
+& "$PSScriptRoot/make-zip.ps1" -Root $root -Destination $zip
+az functionapp deployment source config-zip -g $ResourceGroup -n $func --src $zip --build-remote true --timeout 600
+if ($LASTEXITCODE -ne 0) { throw 'Code deployment failed' }
+Remove-Item $zip
 
 Write-Host "Deployed. Function app: $func"
 Write-Host "Trigger a test run: az functionapp function keys list / invoke https://$func.azurewebsites.net/api/run?code=<key>"

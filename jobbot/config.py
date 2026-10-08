@@ -6,7 +6,7 @@ def _get(name: str, default: str = "") -> str:
 
 
 OPENAI_ENDPOINT = _get("AZURE_OPENAI_ENDPOINT")
-OPENAI_DEPLOYMENT = _get("AZURE_OPENAI_DEPLOYMENT", "gpt-4o-mini")
+OPENAI_DEPLOYMENT = _get("AZURE_OPENAI_DEPLOYMENT", "gpt-5.4-mini")
 STORAGE_CONNECTION = _get("AzureWebJobsStorage")
 CONTAINER = _get("JOBBOT_CONTAINER", "jobbot")
 

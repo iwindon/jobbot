@@ -5,8 +5,10 @@ param baseName string = 'jobbot'
 param location string = resourceGroup().location
 @description('Region for Azure OpenAI (must support the model)')
 param openAiLocation string = 'eastus2'
-param openAiModel string = 'gpt-4o-mini'
-param openAiModelVersion string = '2024-07-18'
+param openAiModel string = 'gpt-5.4-mini'
+param openAiModelVersion string = '2026-03-17'
+@description('Deployment SKU; must match a quota your subscription has for the model')
+param openAiSku string = 'DataZoneStandard'
 @description('Where the daily digest is sent (separate multiple with ;)')
 param emailTo string
 param localLocations string = 'Greenville, SC;Spartanburg, SC'
@@ -59,7 +61,7 @@ resource openai 'Microsoft.CognitiveServices/accounts@2024-10-01' = {
 resource deployment 'Microsoft.CognitiveServices/accounts/deployments@2024-10-01' = {
   parent: openai
   name: openAiModel
-  sku: { name: 'GlobalStandard', capacity: 30 }
+  sku: { name: openAiSku, capacity: 30 }
   properties: {
     model: { format: 'OpenAI', name: openAiModel, version: openAiModelVersion }
   }

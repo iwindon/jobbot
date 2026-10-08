@@ -116,7 +116,7 @@ def adzuna(queries: list[str]) -> list[Job]:
 
 def fetch_all(queries: list[str]) -> list[Job]:
     seen, out = set(), []
-    for fn in (remotive, remoteok, weworkremotely, adzuna):
+    for fn in (remotive, remoteok, adzuna):
         for j in fn(queries):
             if j.id not in seen and j.url:
                 seen.add(j.id)
